@@ -6,7 +6,9 @@
 # The aim is to collect the number of tickets, number of responses per
 # instituion.  Normalised by the number of users at an institution.
 #
-#
+# institutes.csv is the final answer
+# institutes2.csv is for R processing, which currently does not do the
+# aggregation and reduction of users.
 #
 tempfile=$(mktemp --tmpdir)
 
@@ -22,7 +24,7 @@ output2=institutes2.csv
 echo Institute,Tickets,Responses, Responses_per_tkt > $output
 
 #
-# oldvalue is overloaded. It is usually the comment number, butcan
+# oldvalue is overloaded. It is usually the comment number, but can
 # contain things like 'description.1' and, if inline comments are
 # used, '8.9' i.e. mid way between two comments.
 #
@@ -32,15 +34,16 @@ echo Institute,Tickets,Responses, Responses_per_tkt > $output
 sqlite3 -csv ~/Helpdesk/trac_latest.db > $tempfile <<EOF
 select ticket.id, max(cast(oldvalue as integer)), ticket.reporter, session_attribute.value
 from ticket_change, ticket,session_attribute
-where   ticket_change.ticket=ticket.id and 
-        sid = ticket.reporter and session_attribute.value like '%@%' and
-        ticket.time >= strftime('%s','$year-01-01')*1e6 and
-        ticket.time < strftime('%s','$yearp1-01-01')*1e6
+where   ticket_change.ticket=ticket.id and
+	sid = ticket.reporter and session_attribute.value like '%@%' and
+	ticket.time >= strftime('%s','$year-01-01')*1e6 and
+	ticket.time < strftime('%s','$yearp1-01-01')*1e6
 group by ticket.id;
 .exit
 EOF
 
-cat $tempfile > fred.csv
+# For debugging
+#cat $tempfile > fred.csv
 
 # Note the double back slash so we can use '.' as a field separator
 # the lines are ----,----,----,---@---- where the - indicates
@@ -63,11 +66,11 @@ cat $tempfile | \
     # responses for each institution
     grep -v Institute | \
     awk -F, '{total_tickets[$4]++
-         total_resps[$4] += $2}
-        END { for (inst in total_tickets) 
-              printf "%s,%d,%d,%f\n", 
-                 inst, total_tickets[inst], total_resps[inst], 
-                 total_resps[inst]/total_tickets[inst] }' | \
+	 total_resps[$4] += $2}
+	END { for (inst in total_tickets)
+	      printf "%s,%d,%d,%f\n",
+		 inst, total_tickets[inst], total_resps[inst],
+		 total_resps[inst]/total_tickets[inst] }' | \
     sort -k2 -rn >> $output
 
 
@@ -78,7 +81,7 @@ do
   echo $inst, $num_users
 done > users.csv
 
-# Now tag the users onto the end of each institute line in $output
+# Now insert the users into each institute line in $output
 
 echo Institute,Tickets,Responses, Users, Responses_per_tkt > institutes3.csv
 IFS=,
@@ -86,12 +89,15 @@ cat $output | grep -v Institute | \
     while read inst tickets responses resppertkt
     do
 	users=$(grep "^$inst," users.csv | awk -F, '{print $2}')
-	echo $inst, $tickets, $responses, $users, $resppertkt 
+	echo $inst, $tickets, $responses, $users, $resppertkt
     done >> institutes3.csv
 
+# Tidy up
+rm $output
+mv institutes3.csv $output
 
-# Use R to get the plots - creates Rplots.pdf using output2
-Rscript institutes2.R
+# Use R to get the plots - creates Rplots.pdf using output
+Rscript institutes.R
 
 #rm $output
 
