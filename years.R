@@ -19,3 +19,11 @@ title=paste(sprintf("CMS Help Reporters\n",N))
 barplot(stats_in$Reporters,names.arg=stats_in$Year, xlab="Year",ylab="Reporters",main=title)
 
 
+#Put both plots on one graph
+# First transpose the data
+fredt=t(stats_in[,2:ncol(stats_in)])
+colnames(fredt)=stats_in[,1]
+
+barplot(fredt,main="CMS Help desk volumes",ylab="Number",beside=TRUE,col=terrain.colors(2))
+legend("topleft",c("Tickets","Reporters"), cex=0.8,fill=terrain.colors(2))
+
