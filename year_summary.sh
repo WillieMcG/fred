@@ -10,7 +10,7 @@
 tempfile=$(mktemp --tmpdir)
 
 # Header line
-echo Year,Tickets,Reporters
+echo Year,Tickets,Reporters > years.csv
 
 for ((year=2007; year<2018;year++))
 do
@@ -37,8 +37,12 @@ EOF
 
   Num_reporters=$(cat $tempfile | wc -l)
 
-  echo $year, $Num_tickets, $Num_reporters
+  echo $year, $Num_tickets, $Num_reporters >> years.csv
 
 done
+
+Rscript years.R
+
+rm years.csv
 
 rm $tempfile
