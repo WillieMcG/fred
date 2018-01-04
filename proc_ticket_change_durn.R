@@ -19,7 +19,9 @@ stats_in$duration_days[stats_in$duration_days>max_duration]=max_duration
 
 title=paste(sprintf("Proportion of tickets closed within duration, %d tickets\n",N))
 h=ecdf(stats_in$duration_days)
+jpeg(filename="tickets_closed.jpeg")
 plot(h,main=title, xlab="Duration, days")
+dev.off()
 
 title=paste(sprintf("Histogram of ticket duration, %d tickets\n",N))
 fred=hist(stats_in$duration_days, main=title,xlab="Duration, days")
@@ -29,6 +31,8 @@ fred$counts[fred$counts<=0]=1 # prevent taking log of zero
 counts=fred$counts
 
 fred$counts=log10(fred$counts)
+jpeg(filename="tickets_closed_log.jpeg")
 plot(fred,main=title,xlab="Duration, days", ylab="log10(Frequency)",col=("yellow"))
+dev.off()
 
 #end
