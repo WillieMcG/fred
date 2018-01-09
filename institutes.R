@@ -16,15 +16,15 @@ tkts_per_user = stats_in$Tickets/stats_in$Users
 
 title=paste(sprintf("Tickets/Reporter by institute 2017, %d institutes\n",N))
 jpeg(filename="institutes_tktsbyrep.jpeg",width=1280,height=512)
-barplot(tkts_per_user,names.arg=stats_in$Institute, xlab="Institute",ylab="Ticket/Reporter",main=title)
+barplot(tkts_per_user,names.arg=stats_in$Institute, xlab="Institute",ylab="Ticket/Reporter",col="light blue",main=title)
 dev.off()
 
 title=paste(sprintf("Reporters by institute 2017, %d institutes\n",N))
 jpeg(filename="institutes_byrep.jpeg",width=1280,height=512)
-barplot(stats_in$Users,names.arg=stats_in$Institute, xlab="Institute",ylab="Reporters",main=title)
+barplot(stats_in$Users,names.arg=stats_in$Institute, xlab="Institute",ylab="Reporters",col="yellow",main=title)
 dev.off()
 
 title=paste(sprintf("Responses/Ticket by institute 2017, %d institutes\n",N))
 jpeg(filename="institutes_respbytkt.jpeg",width=1280,height=512)
-barplot(stats_in$Responses_per_tkt,names.arg=stats_in$Institute, xlab="Institute",ylab="Responses/ticket",main=title)
+barplot(stats_in$Responses_per_tkt,names.arg=stats_in$Institute, xlab="Institute",ylab="Responses/ticket",col="green",main=title)
 dev.off()

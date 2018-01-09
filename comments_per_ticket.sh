@@ -6,6 +6,9 @@
 # Find for each ticket the number of comments
 #
 #
+year=2017
+yearp1=$((year+1))
+
 tempfile=$(mktemp --tmpdir)
 
 echo Tickets, Comments > max_comments_per_ticket2.csv
@@ -20,7 +23,9 @@ echo Tickets, Comments > max_comments_per_ticket2.csv
 sqlite3 -csv ~/Helpdesk/trac_latest.db > $tempfile <<EOF
 select ticket,max(cast(oldvalue as integer))
 from ticket_change
-where field="comment" and oldvalue not like 'descri%' and oldvalue not like '%.%'
+where field="comment" and oldvalue not like 'descri%' and oldvalue not like '%.%' and
+        time >= strftime('%s','$year-01-01')*1e6 and
+        time < strftime('%s','$yearp1-01-01')*1e6
 group by ticket;
 .exit
 EOF
@@ -30,6 +35,6 @@ cat $tempfile >> max_comments_per_ticket2.csv
 # Use R to get the plots - creates Rplots.pdf
 Rscript proc_max_comments.R
 
-rm max_comments_per_ticket2.csv
+#rm max_comments_per_ticket2.csv
 
 rm $tempfile
