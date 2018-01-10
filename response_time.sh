@@ -36,6 +36,6 @@ cat $tempfile >> helpdesk_1st_response_time_2017.csv
 # Use R to get the plots - creates Rplots.pdf
 Rscript proc_response_time.R
 
-rm helpdesk_1st_response_time_2017.csv
+#rm helpdesk_1st_response_time_2017.csv
 
 rm $tempfile

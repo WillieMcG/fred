@@ -43,6 +43,6 @@ done
 
 Rscript years.R
 
-rm years.csv
+#rm years.csv
 
 rm $tempfile
